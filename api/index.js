@@ -4,7 +4,7 @@ import mongodb from "mongodb";
 import dotenv from "dotenv";
 import authRoute from './routes/auth.js';
 import usersRoute from './routes/users.js';
-import roomRoute from './routes/room.js';
+import roomRoute from './routes/rooms.js';
 import hotelsRoute from './routes/hotels.js';
 import cookieParser from "cookie-parser";
 
