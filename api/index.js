@@ -7,6 +7,7 @@ import usersRoute from './routes/users.js';
 import roomRoute from './routes/rooms.js';
 import hotelsRoute from './routes/hotels.js';
 import cookieParser from "cookie-parser";
+import cors from 'cors';
 
 
 dotenv.config();
@@ -33,11 +34,12 @@ const app= express();
 //middLewares
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors())
 
-app.use("/auth",authRoute);
-app.use("/users",usersRoute);
-app.use("/rooms",roomRoute);
-app.use("/hotels",hotelsRoute);
+app.use("/api/auth",authRoute);
+app.use("/api/users",usersRoute);
+app.use("/api/rooms",roomRoute);
+app.use("/api/hotels",hotelsRoute);
 
 app.use((err,req, res, next)=>{
   const errorStatus = err.status  || 500
@@ -53,11 +55,10 @@ app.use((err,req, res, next)=>{
 app.listen(8800,async ()=>{
   connect();
     console.log('Conectando al backend!!!')
-})
+});
 
 app.get("/reservas",(req,res)=>{
   res.status(200).send("Todo esta OK")
-})
-
+});
 
 
