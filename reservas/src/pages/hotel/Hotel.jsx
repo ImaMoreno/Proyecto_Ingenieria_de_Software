@@ -10,11 +10,43 @@ import {
   faCircleXmark,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import useFetch from "../../hooks/useFetch";
+import { useLocation } from "react-router-dom";
+import { SearchContext } from "../../context/SearchContext";
 
 const Hotel = () => {
+  const location = useLocation()
+  const hId = location.pathname.split("/")[2]
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
+  const [days, setDays] = useState(0);
+
+  const {data, loading, error, reFetch} = useFetch(`/hotels/find/${hId}`)
+  
+  const {dates,options} = useContext(SearchContext);
+
+  const MILISECONDS_PER_DAY = 1000* 60 * 60 * 24;
+  const dayDifference = (date1,date2) =>{
+    const timeDiff = Math.abs(date2.getTime() - date1.getTime());
+    const diffDays = Math.ceil(timeDiff / MILISECONDS_PER_DAY);
+    return diffDays;
+  }
+
+  useEffect(()=>{
+    try{
+      localStorage.setItem("startDate",new Date(dates[0].startDate));
+      localStorage.setItem("endDate",new Date(dates[0].endDate));
+      const currentDays= dayDifference(dates[0].endDate,dates[0].startDate);
+      setDays(currentDays)
+    }catch(err){
+      let start = new Date(localStorage.getItem("startDate"));
+      let end = new Date(localStorage.getItem("endDate"));
+      const currentDays= dayDifference(end,start);
+      setDays(currentDays)
+    }
+    
+  },[])
 
   const photos = [
     {
@@ -72,7 +104,7 @@ const Hotel = () => {
               onClick={() => handleMove("l")}
             />
             <div className="sliderWrapper">
-              <img src={photos[slideNumber].src} alt="" className="sliderImg" />
+              <img src={data.photos[slideNumber]} alt="" className="sliderImg" />
             </div>
             <FontAwesomeIcon
               icon={faCircleArrowRight}
@@ -82,24 +114,24 @@ const Hotel = () => {
           </div>
         )}
         <div className="hotelWrapper">
-          <button className="bookNow">Reserve or Book Now!</button>
-          <h1 className="hotelTitle">Tower Street Apartments</h1>
+          <button className="bookNow">Reservar o Separar Ahora!</button>
+          <h1 className="hotelTitle">{data.name}</h1>
           <div className="hotelAddress">
             <FontAwesomeIcon icon={faLocationDot} />
-            <span>Elton St 125 New york</span>
+            <span>{data.address}</span>
           </div>
           <span className="hotelDistance">
-            Excellent location – 500m from center
+            Excelente Ubicación – {data.distance}m desde el centro
           </span>
           <span className="hotelPriceHighlight">
-            Book a stay over $114 at this property and get a free airport taxi
+            Reserve una estadía por mas de ${data.cheapestPrice} en la propiedad y obtenga un el taxi gratuito al aeropuerto
           </span>
           <div className="hotelImages">
-            {photos.map((photo, i) => (
+            {data.photos?.map((photo, i) => (
               <div className="hotelImgWrapper" key={i}>
                 <img
                   onClick={() => handleOpen(i)}
-                  src={photo.src}
+                  src={photo}
                   alt=""
                   className="hotelImg"
                 />
@@ -108,31 +140,20 @@ const Hotel = () => {
           </div>
           <div className="hotelDetails">
             <div className="hotelDetailsTexts">
-              <h1 className="hotelTitle">Stay in the heart of City</h1>
+              <h1 className="hotelTitle">{data.title}</h1>
               <p className="hotelDesc">
-                Located a 5-minute walk from St. Florian's Gate in Krakow, Tower
-                Street Apartments has accommodations with air conditioning and
-                free WiFi. The units come with hardwood floors and feature a
-                fully equipped kitchenette with a microwave, a flat-screen TV,
-                and a private bathroom with shower and a hairdryer. A fridge is
-                also offered, as well as an electric tea pot and a coffee
-                machine. Popular points of interest near the apartment include
-                Cloth Hall, Main Market Square and Town Hall Tower. The nearest
-                airport is John Paul II International Kraków–Balice, 16.1 km
-                from Tower Street Apartments, and the property offers a paid
-                airport shuttle service.
+                {data.desc}
               </p>
             </div>
             <div className="hotelDetailsPrice">
-              <h1>Perfect for a 9-night stay!</h1>
+              <h1>Perfecto para una estadía de {days}-noches!</h1>
               <span>
-                Located in the real heart of Krakow, this property has an
-                excellent location score of 9.8!
+                Está propiedad esta en una excelente ubicacion cerca al centro de la ciudad!
               </span>
               <h2>
-                <b>$945</b> (9 nights)
+                <b>${days * data.cheapestPrice * options.room}</b> ({days} noches)
               </h2>
-              <button>Reserve or Book Now!</button>
+              <button>Reservar AHORA!</button>
             </div>
           </div>
         </div>

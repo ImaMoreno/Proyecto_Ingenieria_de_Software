@@ -4,11 +4,12 @@ import "./featured.css";
 const Featured = () => {
 
   const {data, loading, error, reFetch} = useFetch("/hotels/countByCity?cities=medellin,mexico,madrid")
+  
   return (
     <div className="featured">
 
-      {loading ? ("Cargando por favor espere ..."):(<>
-        <div className="featuredItem">
+      {loading ? ("Cargando por favor espere..."):(<>
+      <div className="featuredItem">
         <img
           src="https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o="
           alt=""
@@ -27,10 +28,8 @@ const Featured = () => {
           className="featuredImg"
         />
         <div className="featuredTitles">
-        <div className="featuredTitles">
           <h1>Mexico</h1>
           <h4>{data[1]} propiedades</h4>
-        </div>
         </div>
       </div>
       <div className="featuredItem">
@@ -40,10 +39,8 @@ const Featured = () => {
           className="featuredImg"
         />
         <div className="featuredTitles">
-        <div className="featuredTitles">
           <h1>Madrid</h1>
           <h4>{data[2]} propiedades</h4>
-        </div>
         </div>
       </div>
       </>)}
