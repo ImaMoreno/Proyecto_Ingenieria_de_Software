@@ -11,7 +11,7 @@ const Login = () => {
         password:undefined,
     });
 
-    const {user, loading, error, dispatch} = useContext(AuthContext)
+    const {loading, error, dispatch} = useContext(AuthContext)
     const navigate = useNavigate()
 
     const handleChange = (e) => {
@@ -47,7 +47,7 @@ const Login = () => {
         }
     }
 
-    console.log(user)
+    
 
     return (
         <div className="container-login">
@@ -56,9 +56,11 @@ const Login = () => {
             <div className="login">
                 <label for="label">Iniciar Sesion</label>
                     <input type="text" placeholder="Nombre de usuario" id="username" className="lInput" 
+                    onKeyUp={(e)=> e.key==="Enter" ? login(e):""}
                     onChange={handleChange}
                     />
                     <input type="password" placeholder="Contraseña" id="password" className="lInput" 
+                    onKeyUp={(e)=> e.key==="Enter" ? login(e):""}
                     onChange={handleChange}
                     />
                     <button className="lButton" onClick={login}>Ingresar</button>

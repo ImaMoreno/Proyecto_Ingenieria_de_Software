@@ -1,31 +1,36 @@
 import express from "express";
-import { deleteUser, getUser, getUsers, updateUser } from "../controllers/user.js";
-import { verifyAdmin, verifyToken, verifyUSer } from "../utils/verifyToken.js";
+import {
+  updateUser,
+  deleteUser,
+  getUser,
+  getUsers,
+} from "../controllers/user.js";
+import { verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
+
 const router = express.Router();
 
-// router.get("/prueba",verifyToken,(req, res, next)=> {
-//     res.send("Hola estoy autenticando!")
+// router.get("/checkauthentication", verifyToken, (req,res,next)=>{
+//   res.send("hello user, you are logged in")
 // })
 
-// router.get("/prueba/:id",verifyUSer,(req, res, next)=> {
-//     res.send("Hola estoy autenticando Y soy Admin!")
+// router.get("/checkuser/:id", verifyUser, (req,res,next)=>{
+//   res.send("hello user, you are logged in and you can delete your account")
 // })
 
-// router.get("/admin/:id",verifyAdmin,(req, res, next)=> {
-//     res.send("Hola Soy Dios PA!")
+// router.get("/checkadmin/:id", verifyAdmin, (req,res,next)=>{
+//   res.send("hello admin, you are logged in and you can delete all accounts")
 // })
 
+//UPDATE
+router.put("/:id", verifyUser, updateUser);
 
-//UPDATE USERS
-router.put("/:id",verifyUSer,updateUser);
+//DELETE
+router.delete("/:id", verifyUser, deleteUser);
 
-//DELETE USERS
-router.delete("/:id",verifyUSer,deleteUser)
+//GET
+router.get("/:id", verifyUser, getUser);
 
- //GET USERS
-router.get("/:id",verifyUSer,getUser)
+//GET ALL
+router.get("/", verifyAdmin, getUsers);
 
- //GET ALL USERS
-router.get("/",verifyAdmin,getUsers)
-
-    export default router;
+export default router;

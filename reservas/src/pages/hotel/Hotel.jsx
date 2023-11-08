@@ -12,18 +12,23 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
+import { AuthContext } from "../../context/AuthContext";
+import  Reserve  from "../../components/reserve/Reserve.jsx";
 
 const Hotel = () => {
   const location = useLocation()
   const hId = location.pathname.split("/")[2]
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [days, setDays] = useState(0);
 
   const {data, loading, error, reFetch} = useFetch(`/hotels/find/${hId}`)
-  
+  const {user} = useContext(AuthContext)
+  const navigate = useNavigate()
+
   const {dates,options} = useContext(SearchContext);
 
   const MILISECONDS_PER_DAY = 1000* 60 * 60 * 24;
@@ -86,11 +91,21 @@ const Hotel = () => {
     setSlideNumber(newSlideNumber)
   };
 
+  const handleClick = () =>{
+    if(user){
+      setOpenModal(true);
+    }else{
+      navigate("/login")
+    }
+
+  }
+
   return (
     <div>
       <Navbar />
       <Header type="list" />
-      <div className="hotelContainer">
+      {loading? ("Cargando..."):
+      (<div className="hotelContainer">
         {open && (
           <div className="slider">
             <FontAwesomeIcon
@@ -153,13 +168,15 @@ const Hotel = () => {
               <h2>
                 <b>${days * data.cheapestPrice * options.room}</b> ({days} noches)
               </h2>
-              <button>Reservar AHORA!</button>
+              <button onClick={handleClick}>Reservar AHORA!</button>
             </div>
           </div>
         </div>
         <MailList />
         <Footer />
       </div>
+      )}
+      {openModal && <Reserve setOpen={setOpenModal} hotelId={hId}/>}
     </div>
   );
 };
